@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Отбор в школу диджеинга</title>
+  <meta name="description" content="Заявка на отбор в школу диджеинга Мегабайт Медиа">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=PT+Sans:wght@400;700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ------------------------------------------------ форма кандидата -->
+<main id="view-form" class="page">
+  <section class="card">
+    <h1 id="form-title">Школа диджеинга</h1>
+    <p id="form-subtitle" class="subtitle">Отбор на поток</p>
+
+    <form id="application-form" novalidate>
+      <label>
+        Фамилия и имя
+        <input name="full_name" autocomplete="name" required>
+      </label>
+
+      <div class="grid-2">
+        <label>
+          Номер ИСУ
+          <input name="isu_number" inputmode="numeric" placeholder="Если есть">
+          <span class="hint">Необязательно</span>
+        </label>
+        <label>
+          Телефон
+          <input name="phone" type="tel" inputmode="tel" placeholder="+7 900 000-00-00" required>
+        </label>
+      </div>
+
+      <label>
+        Почта
+        <input name="email" type="email" inputmode="email" autocomplete="email" required>
+        <span class="hint">На неё придёт код подтверждения и решение по заявке</span>
+      </label>
+
+      <div class="grid-2">
+        <label>
+          Ссылка на VK
+          <input name="vk_url" inputmode="url" placeholder="https://vk.com/...">
+        </label>
+        <label>
+          Ссылка на Telegram
+          <input name="telegram_url" inputmode="url" placeholder="https://t.me/...">
+        </label>
+      </div>
+
+      <label>
+        Почему ты хочешь научиться диджеингу? Расскажи о своей мотивации
+        <textarea name="motivation" rows="4" required></textarea>
+      </label>
+
+      <label>
+        Есть ли у тебя бэкграунд, связанный с музыкой?
+        <textarea name="background" rows="3"></textarea>
+        <span class="hint">Танцы, игра на инструменте, вокал, помощь со звуком на дискотеках</span>
+      </label>
+
+      <label>
+        Какие у тебя ожидания от школы диджеев? Что бы хотел на ней увидеть?
+        <textarea name="expectations" rows="3"></textarea>
+      </label>
+
+      <label>
+        Какая финальная цель твоего обучения диджеингу - что дальше?
+        <textarea name="goal" rows="3"></textarea>
+      </label>
+
+      <label>
+        Откуда узнал про школу?
+        <input name="source">
+      </label>
+
+      <label class="consent">
+        <input type="checkbox" name="consent" required>
+        <span>
+          Я согласен на обработку моих персональных данных в соответствии с
+          <a id="policy-link" href="#" target="_blank" rel="noreferrer">политикой обработки персональных данных</a>
+          Университета ИТМО
+        </span>
+      </label>
+
+      <button type="submit" id="submit-btn">Отправить заявку</button>
+      <p id="form-error" class="message error" hidden></p>
+    </form>
+  </section>
+
+  <p class="foot">
+    Оцениваете заявки? <a href="#judge">Вход для преподавателей</a>
+  </p>
+</main>
+
+<!-- ------------------------------------------ подтверждение почты -->
+<main id="view-code" class="page" hidden>
+  <section class="card narrow">
+    <h1>Подтвердите почту</h1>
+    <p class="subtitle">Код из шести цифр отправлен на <b id="code-email"></b></p>
+
+    <div class="spam-note">
+      <strong>Проверьте папку со спамом.</strong>
+      Письма от нового адреса часто попадают туда. Если нашли там - отметьте «не спам»,
+      иначе решение по заявке тоже уедет в спам.
+    </div>
+
+    <form id="code-form" novalidate>
+      <label>
+        Код из письма
+        <input name="token" inputmode="numeric" autocomplete="one-time-code"
+               maxlength="8" placeholder="123456" required>
+      </label>
+      <button type="submit" id="code-btn">Подтвердить и отправить заявку</button>
+      <p id="code-error" class="message error" hidden></p>
+    </form>
+
+    <div class="code-actions">
+      <button type="button" class="link-btn" id="resend-btn">Отправить код снова</button>
+      <button type="button" class="link-btn" id="skip-btn" hidden>
+        Код так и не пришёл - отправить заявку без подтверждения
+      </button>
+    </div>
+  </section>
+</main>
+
+<!-- ------------------------------------------------ заявка принята -->
+<main id="view-done" class="page" hidden>
+  <section class="card narrow">
+    <h1>Заявка отправлена</h1>
+    <p class="message ok" id="done-text"></p>
+    <p>
+      Решение придёт на указанную почту. Если письма нет - посмотрите в спаме,
+      там же будет и ответ по заявке.
+    </p>
+  </section>
+</main>
+
+<!-- ------------------------------------------------- вход для судей -->
+<main id="view-login" class="page" hidden>
+  <section class="card narrow">
+    <h1>Оценка заявок</h1>
+    <p class="subtitle">Введите код, который вам выдали</p>
+
+    <form id="login-form" novalidate>
+      <label>
+        Код
+        <input name="code" autocomplete="off" autocapitalize="characters"
+               spellcheck="false" placeholder="ABCD-1234" required>
+      </label>
+      <button type="submit" id="login-btn">Войти</button>
+      <p id="login-error" class="message error" hidden></p>
+    </form>
+
+    <p class="foot-inline">
+      Код личный - по нему видно, кто поставил голос. Не пересылайте его в общие чаты.
+    </p>
+  </section>
+
+  <p class="foot"><a href="#">К форме заявки</a></p>
+</main>
+
+<!-- --------------------------------------------------- доска судьи -->
+<main id="view-board" class="page wide" hidden>
+  <header class="board-head">
+    <div>
+      <h1>Заявки на отбор</h1>
+      <p class="subtitle" id="board-me"></p>
+    </div>
+    <div class="board-actions">
+      <button type="button" class="ghost" id="refresh-btn">Обновить</button>
+      <button type="button" class="ghost" id="logout-btn">Выйти</button>
+    </div>
+  </header>
+
+  <section class="summary" id="board-summary"></section>
+
+  <div class="bulk" id="bulk-panel" hidden>
+    <span id="bulk-count"></span>
+    <input id="bulk-note" placeholder="Одна заметка на всех выбранных">
+    <button type="button" id="bulk-save">Поставить заметку</button>
+    <button type="button" class="ghost" id="bulk-clear">Снять выбор</button>
+  </div>
+
+  <p id="board-error" class="message error" hidden></p>
+  <p id="board-notice" class="message ok" hidden></p>
+
+  <div id="board-list" class="board-list"></div>
+</main>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
