@@ -7,7 +7,7 @@
 
 window.CASTING_CONFIG = {
   // Project URL, вид: https://abcdefghijklm.supabase.co
-  supabaseUrl: 'https://xyhkkqmkqsbcorydknsc.supabase.co/rest/v1/',
+  supabaseUrl: 'https://xyhkkqmkqsbcorydknsc.supabase.co',
 
   // anon public key, длинная строка, начинается на eyJ
   supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5aGtrcW1rcXNiY29yeWRrbnNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk2NzY5NDMsImV4cCI6MjEwNTI1Mjk0M30.tVubDCqngJbRX5g2jkBf40LvuUS5pjdy1z1HqkJzEUU',
