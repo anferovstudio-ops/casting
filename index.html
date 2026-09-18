@@ -96,6 +96,22 @@
   </p>
 </main>
 
+<!-- --------------------------------------------- приём заявок закрыт -->
+<main id="view-closed" class="page" hidden>
+  <section class="card narrow">
+    <h1>Приём заявок закрыт</h1>
+    <p class="subtitle" id="closed-text"></p>
+    <p>
+      Когда откроем следующий набор, форма на этой же странице заработает снова.
+      Если вы уже отправляли заявку, решение придёт на указанную почту.
+    </p>
+  </section>
+
+  <p class="foot">
+    Оцениваете заявки? <a href="#judge">Вход для преподавателей</a>
+  </p>
+</main>
+
 <!-- ------------------------------------------ подтверждение почты -->
 <main id="view-code" class="page" hidden>
   <section class="card narrow">
@@ -171,10 +187,18 @@
       <p class="subtitle" id="board-me"></p>
     </div>
     <div class="board-actions">
+      <span class="intake-pill" id="intake-pill"></span>
+      <button type="button" class="ghost" id="intake-btn" hidden></button>
       <button type="button" class="ghost" id="refresh-btn">Обновить</button>
       <button type="button" class="ghost" id="logout-btn">Выйти</button>
     </div>
   </header>
+
+  <div class="intake-row" id="intake-row" hidden>
+    <label for="intake-message">Что увидят на закрытой форме</label>
+    <input id="intake-message" placeholder="Приём заявок на этот поток закрыт.">
+    <button type="button" class="ghost" id="intake-message-save">Сохранить текст</button>
+  </div>
 
   <section class="summary" id="board-summary"></section>
 
