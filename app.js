@@ -274,6 +274,34 @@
     return found ? found.name : 'Судья ' + id;
   }
 
+  /** Ссылка на профиль из того, что человек ввёл в поле.
+   *
+   *  Пишут по-разному: полным адресом, без протокола, просто ником, через @.
+   *  Без протокола браузер считает адрес путём внутри сайта и уводит на
+   *  casting.mb-dj.ru/vk.com/... - поэтому достраиваем сами.
+   *
+   *  Заодно это отсекает javascript: и прочие схемы: наружу уходит только
+   *  то, что мы сами собрали или что начинается с http(s).
+   */
+  function profileUrl(value, base) {
+    var raw = String(value == null ? '' : value).trim().replace(/^@+/, '@');
+    if (!raw) { return ''; }
+    if (/^https?:\/\//i.test(raw)) { return raw; }
+    if (raw.charAt(0) === '@') { return base + raw.slice(1); }
+
+    var bare = raw.replace(/^\/+/, '').replace(/^www\./i, '');
+    if (/^(vk\.com|m\.vk\.com|t\.me|telegram\.me)\//i.test(bare)) {
+      return 'https://' + bare;
+    }
+    if (/^[\w-]+(\.[\w-]+)+\//.test(bare)) {      // любой другой домен с путём
+      return 'https://' + bare;
+    }
+    if (/^[A-Za-z0-9_.]{2,64}$/.test(bare)) {     // просто ник
+      return base + bare;
+    }
+    return '';
+  }
+
   function answerBlock(title, text) {
     if (!text) { return ''; }
     return '<div class="answer"><h4>' + escapeHtml(title) + '</h4><p>' + escapeHtml(text) + '</p></div>';
@@ -335,9 +363,15 @@
         ? '<p class="contacts">' + escapeHtml(app.email) + ' · ' + escapeHtml(app.phone || '') + '</p>'
         : '';
 
+      var vk = profileUrl(app.vk_url, 'https://vk.com/');
+      var tg = profileUrl(app.telegram_url, 'https://t.me/');
+
       var links = [
-        app.vk_url ? '<a href="' + escapeHtml(app.vk_url) + '" target="_blank" rel="noreferrer">VK</a>' : '',
-        app.telegram_url ? '<a href="' + escapeHtml(app.telegram_url) + '" target="_blank" rel="noreferrer">Telegram</a>' : '',
+        vk ? '<a href="' + escapeHtml(vk) + '" target="_blank" rel="noreferrer">VK</a>' : '',
+        tg ? '<a href="' + escapeHtml(tg) + '" target="_blank" rel="noreferrer">Telegram</a>' : '',
+        // ввели что-то нечитаемое - показываем как текст, чтобы не потерять
+        !vk && app.vk_url ? '<span>VK: ' + escapeHtml(app.vk_url) + '</span>' : '',
+        !tg && app.telegram_url ? '<span>TG: ' + escapeHtml(app.telegram_url) + '</span>' : '',
         app.isu_number ? '<span>ИСУ ' + escapeHtml(app.isu_number) + '</span>' : ''
       ].filter(Boolean).join(' · ');
 
