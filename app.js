@@ -27,7 +27,7 @@
   function el(id) { return document.getElementById(id); }
 
   function show(view) {
-    ['view-form', 'view-code', 'view-done', 'view-login', 'view-board'].forEach(function (id) {
+    ['view-form', 'view-closed', 'view-code', 'view-done', 'view-login', 'view-board'].forEach(function (id) {
       el(id).hidden = id !== view;
     });
     window.scrollTo(0, 0);
@@ -284,6 +284,22 @@
     var isManagement = board.me.role === 'management';
     el('board-me').textContent = board.me.name + (isManagement ? ' · руководство' : ' · преподаватель');
 
+    var intake = board.intake || { open: true, message: '' };
+    var pill = el('intake-pill');
+    pill.textContent = intake.open ? 'Приём открыт' : 'Приём закрыт';
+    pill.className = 'intake-pill ' + (intake.open ? 'on' : 'off');
+
+    var intakeBtn = el('intake-btn');
+    intakeBtn.hidden = !isManagement;
+    intakeBtn.textContent = intake.open ? 'Закрыть приём' : 'Открыть приём';
+    el('intake-row').hidden = !isManagement;
+
+    // Доска сама обновляется каждые 25 секунд: если в этот момент в поле
+    // что-то печатают, подставлять туда значение из базы нельзя
+    if (document.activeElement !== el('intake-message')) {
+      el('intake-message').value = intake.message || '';
+    }
+
     var total = board.applications.length;
     var decided = board.applications.filter(function (a) { return a.status !== 'new'; }).length;
     var mine = board.applications.filter(function (a) { return (a.votes || {})[String(board.me.id)]; }).length;
@@ -507,6 +523,21 @@
     renderBoard();
   });
 
+  el('intake-btn').addEventListener('click', function () {
+    var open = !((state.board && state.board.intake) || {}).open;
+    act('set_intake', {
+      p_open: open,
+      p_message: el('intake-message').value || null
+    }, open ? 'Приём заявок открыт' : 'Приём заявок закрыт');
+  });
+
+  el('intake-message-save').addEventListener('click', function () {
+    act('set_intake', {
+      p_open: ((state.board && state.board.intake) || {}).open,
+      p_message: el('intake-message').value || null
+    }, 'Текст сохранён');
+  });
+
   el('refresh-btn').addEventListener('click', function () { load(); });
 
   el('logout-btn').addEventListener('click', function () {
@@ -543,6 +574,17 @@
     }
 
     show('view-form');
+
+    // Форму показываем сразу, а не после ответа сервера: ждать пустой экран
+    // хуже, чем на долю секунды увидеть поля. Если приём закрыт - уводим на
+    // объяснение; заявку всё равно не примет и сама функция в базе.
+    if (!configured()) { return; }
+    rpc('intake_status', {}).then(function (intake) {
+      if (intake && intake.open === false && !el('view-form').hidden) {
+        el('closed-text').textContent = intake.message || 'Приём заявок закрыт.';
+        show('view-closed');
+      }
+    }, function () { /* не достучались - оставляем форму, решит база */ });
   }
 
   window.addEventListener('hashchange', route);

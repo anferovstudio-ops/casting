@@ -189,7 +189,48 @@ a { color: #2a5089; }
   margin-bottom: 14px;
 }
 
-.board-actions { display: flex; gap: 8px; }
+.board-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+/* Состояние приёма видно всем судьям: иначе непонятно, почему заявки
+   перестали появляться. Переключает его только руководство. */
+.intake-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.intake-pill::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.intake-pill.on  { color: var(--ok-ink);  background: var(--ok-bg);  border-color: var(--ok-line); }
+.intake-pill.off { color: var(--bad-ink); background: var(--bad-bg); border-color: var(--bad-line); }
+
+.intake-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  background: var(--paper);
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.intake-row label { margin: 0; color: var(--muted); font-weight: 600; }
+.intake-row input { flex: 1 1 260px; width: auto; }
 
 .summary {
   display: grid;
