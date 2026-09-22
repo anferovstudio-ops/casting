@@ -328,6 +328,8 @@ a { color: #2a5089; }
   font-variant-numeric: tabular-nums;
 }
 
+.score.mine { font-size: 13px; font-weight: 700; color: var(--muted); }
+
 .contacts { margin: 0; font-size: 13.5px; color: var(--muted); word-break: break-word; }
 
 .vote-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
