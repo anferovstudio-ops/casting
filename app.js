@@ -260,10 +260,18 @@
     return 'На рассмотрении';
   }
 
-  function leaning(app) {
-    var counts = voteCounts(app);
+  /** Цветная полоска слева у карточки.
+   *
+   *  У руководства - по перевесу голосов, у преподавателя - по его
+   *  собственному голосу: чужих он не видит, и подсказывать ими нельзя.
+   */
+  function leaning(app, board) {
     if (app.status === 'accepted') { return 'accepted'; }
     if (app.status === 'rejected') { return 'rejected'; }
+    if (board.me.role !== 'management') {
+      return (app.votes || {})[String(board.me.id)] || 'tie';
+    }
+    var counts = voteCounts(app);
     if (counts.up > counts.down) { return 'up'; }
     if (counts.down > counts.up) { return 'down'; }
     return 'tie';
@@ -352,12 +360,22 @@
       var myVote = (app.votes || {})[String(board.me.id)] || '';
       var isOpen = Boolean(state.open[app.id]);
 
-      var chips = (board.judges || []).map(function (judge) {
-        var vote = (app.votes || {})[String(judge.id)];
-        if (!vote) { return ''; }
-        return '<span class="chip ' + vote + '">' + (vote === 'up' ? '👍' : '👎') + ' ' +
-          escapeHtml(judge.name) + '</span>';
-      }).join('');
+      // Кто как проголосовал - только руководству
+      var chips = isManagement
+        ? (board.judges || []).map(function (judge) {
+            var vote = (app.votes || {})[String(judge.id)];
+            if (!vote) { return ''; }
+            return '<span class="chip ' + vote + '">' + (vote === 'up' ? '👍' : '👎') + ' ' +
+              escapeHtml(judge.name) + '</span>';
+          }).join('')
+        : '';
+
+      // Счёт голосов тоже: преподаватель видит только свой выбор
+      var scoreBox = isManagement
+        ? '<div class="score"><b>' + counts.up + '</b> : <b>' + counts.down + '</b></div>'
+        : '<div class="score mine">' +
+            (myVote === 'up' ? '👍 ваш голос' : myVote === 'down' ? '👎 ваш голос' : 'вы не голосовали') +
+          '</div>';
 
       var contacts = isManagement && app.email
         ? '<p class="contacts">' + escapeHtml(app.email) + ' · ' + escapeHtml(app.phone || '') + '</p>'
@@ -392,7 +410,7 @@
             : '');
 
       return '' +
-        '<article class="app ' + leaning(app) + '">' +
+        '<article class="app ' + leaning(app, board) + '">' +
           '<div class="app-head">' +
             (isManagement
               ? '<input type="checkbox" class="pick" data-id="' + app.id + '"' +
@@ -406,7 +424,7 @@
                 (links ? '<span class="links">' + links + '</span>' : '') +
               '</p>' +
             '</div>' +
-            '<div class="score"><b>' + counts.up + '</b> : <b>' + counts.down + '</b></div>' +
+            scoreBox +
           '</div>' +
 
           contacts +
